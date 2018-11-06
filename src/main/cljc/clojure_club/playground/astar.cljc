@@ -10,8 +10,8 @@
    "#################     ##########"
    "#################     ##########"
    "#####  ##########    ###########"
-   "####    ##########  ############"
-   "###      #######################"
+   "####    ######      ############"
+   "###             ################"
    "###      #######################"
    "####    ########################"
    "#####################  #########"
@@ -66,13 +66,38 @@
     true
     false))
 
-(defn solve [open closed terrain]
+(def open-list
+  [{:location [0 0]
+    :score    43
+    :path     [[1 0] [-1 0] [0 1] [0 -1]]}])
 
-  )
+(def closed-list
+  (hash-set (first open-list)))
 
+(defn not-in-closed-list [[x y] closed-list]
+  (not (contains? closed-list (hash [x y]))))
 
+(defn within-bounds [[x y] terrain]
+  (if (= (get-in terrain [x y]) nil)
+    false
+    true))
 
+(defn valid-neighbor [[x y] closed-list terrain]
+  (if (and (within-bounds [x y] terrain) (not-in-closed-list [x y] closed-list))
+    true
+    false))
 
+; (filter #(valid-neighbor % closed-list map-32x32x4) (neighbors [0 0]))
+
+(defn solve [open-list closed terrain]
+  (let [curr (first open-list)]
+    (if (= (get-in terrain [(:y curr) (:x curr)]) goal)
+      (doall
+        (println "yeah")
+        (assoc curr :path (conj (:path curr) [(:x curr) (:y curr)])))
+      (doall
+        (println "nope")
+        (solve (neighbors (curr :location)))))))
 
 
 
